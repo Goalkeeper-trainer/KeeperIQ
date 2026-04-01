@@ -1,13 +1,12 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. API Verbindung & Modell-Definition
+# 1. 
 try:
     api_key = st.secrets["AIzaSyD08tKZBrvtmuB8VUjU4PeWfMxii2l9QTs"]
     genai.configure(api_key=api_key)
     
-    # Das "Gehirn" der App definieren (Gemini 1.5 Flash für Speed)
-    model = genai.GenerativeModel('gemini-1.5-flash') 
+    # 2. model = genai.GenerativeModel('gemini-1.5-flash') 
 except Exception as e:
     st.error(f"API Fehler: {e}")
 
