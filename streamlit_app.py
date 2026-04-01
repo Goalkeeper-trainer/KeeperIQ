@@ -13,7 +13,7 @@ except:
 st.set_page_config(page_title="KeeperIQ", page_icon="🧤")
 
 # Dein Logo (Option 2: Cyber-Glove)
-logo_url = "https://raw.githubusercontent.com/Torwart-Trainer/KeeperIQ/main/logo.png
+logo_url = "https://raw.githubusercontent.com/Torwart-Trainer/KeeperIQ/main/logo.png"
 
 st.title("🧤 KeeperIQ – Dein Profi-Coach")
 
