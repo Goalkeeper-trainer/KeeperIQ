@@ -1,101 +1,59 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. 
+# --- 1. SETUP & KI MODELL ---
+# Wir definieren das Modell ganz am Anfang, damit der Fehler verschwindet
 try:
-    api_key = st.secrets["AIzaSyD08tKZBrvtmuB8VUjU4PeWfMxii2l9QTs"]
+    api_key = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=api_key)
-    
-    # 2. model = genai.GenerativeModel('gemini-1.5-flash') 
+    # Hier definieren wir das 'model' - das ist das Herzstück!
+    model = genai.GenerativeModel('gemini-1.5-flash')
 except Exception as e:
-    st.error(f"API Fehler: {e}")
+    st.error(f"Setup-Fehler: {e}")
 
-# 2. Design & Branding
+# --- 2. DESIGN & NAVIGATION ---
 st.set_page_config(page_title="KeeperIQ", page_icon="🧤")
-
-# Dein Cyber-Logo
-logo_url = "https://raw.githubusercontent.com/Torwart-Trainer/KeeperIQ/main/logo.png"
-# Falls das Github-Logo noch nicht da ist, nutzen wir einen Platzhalter, damit es keine Fehler gibt
-try:
-    st.image(logo_url, width=250)
-except:
-    st.title("🧤 KeeperIQ")
-
-st.title("KeeperIQ – Dein Profi-Coach")
-
-# --- SEITENLEISTE (BUSINESS-CENTER) ---
-st.sidebar.header("Navigation")
+st.sidebar.title("Navigation")
 page = st.sidebar.radio("Gehe zu:", ["Training", "Über KeeperIQ", "PRO Upgrade 💎"])
 
 if page == "Training":
-    st.sidebar.markdown("---")
-    version = st.sidebar.radio("Deine Mitgliedschaft:", ["Standard (Kostenlos)", "PRO (Premium 💎)"])
+    st.title("🧤 KeeperIQ – Dein Profi-Coach")
+    version = st.sidebar.radio("Mitgliedschaft:", ["Standard (Kostenlos)", "PRO (Premium 💎)"])
     
-    if version == "PRO (Premium 💎)":
-        st.success("💎 PRO-MODUS AKTIVIERT")
-    else:
-        st.info("💡 Tipp: Nutze PRO für 3x schnellere Entwicklung.")
+    st.info("💡 Tipp: Nutze PRO für 3x schnellere Entwicklung.")
 
-    # --- HAUPTBEREICH: TRAINING ---
-    name = st.text_input("Wie heißt du?", placeholder="z.B. Tyler")
+    # Eingabefelder
+    name = st.text_input("Wie heißt du?")
     alter = st.number_input("Dein Alter", min_value=5, max_value=50, value=21)
-    fokus = st.selectbox("Heutiger Schwerpunkt:", 
-                         ["Reaktion", "Flanken", "1 gegen 1", "Strafraumbeherrschung", "Abschlag", "Stellungsspiel"])
+    fokus = st.selectbox("Heutiger Schwerpunkt:", ["Reaktion", "Flanken", "1 gegen 1", "Stellungsspiel", "Abschlag"])
 
-    # PRO-FEATURES
+    # PRO-Logik
     if version == "PRO (Premium 💎)":
-        st.subheader("PRO-Analyse Parameter")
-        col1, col2 = st.columns(2)
-        with col1:
-            fitness = st.select_slider("Dein Energie-Level:", options=["Erschöpft", "Normal", "Topfit"])
-            untergrund = st.selectbox("Untergrund:", ["Rasen", "Kunstrasen", "Hartplatz", "Halle"])
-        with col2:
-            equipment = st.multiselect("Equipment:", ["Hütchen", "Rebounder", "Koordinationsleiter", "Zweiter Keeper"])
-            dauer = st.slider("Dauer (Minuten):", 20, 120, 45)
-        notiz = st.text_area("Besondere Wünsche oder Zipperlein?")
+        fitness = st.select_slider("Energie-Level:", options=["Erschöpft", "Normal", "Topfit"])
+        untergrund = st.selectbox("Untergrund:", ["Rasen", "Kunstrasen", "Halle"])
+        prompt_text = f"Erstelle einen ELITE Plan für {name} ({alter}J). Fokus: {fokus}, Energie: {fitness}, Boden: {untergrund}."
     else:
-        fitness, untergrund, equipment, dauer, notiz = "Normal", "Rasen", [], 30, "Keine"
+        prompt_text = f"Erstelle einen einfachen Torwart-Plan für {name} ({alter}J). Fokus: {fokus}."
 
+    # BUTTON ZUM STARTEN
     if st.button("Trainingsplan erstellen 🔥"):
         if name:
-            with st.spinner('Coach analysiert die Daten...'):
+            with st.spinner('Coach erstellt den Plan...'):
                 try:
-                    # Der Auftrag an die KI (Prompt)
-                    if version == "PRO (Premium 💎)":
-                        prompt = (f"Du bist ein ELITE Torwart-Trainer. Erstelle einen hochpersonalisierten Plan für {name} ({alter}J). "
-                                  f"Fokus: {fokus}. Energie: {fitness}. Boden: {untergrund}. Equipment: {equipment}. "
-                                  f"Dauer: {dauer} Min. Zusatz: {notiz}. "
-                                  f"Erstelle ein Warm-up, 3 Profi-Übungen und ein Cool-down. Sei motivierend!")
-                    else:
-                        prompt = f"Erstelle einen einfachen Torwart-Trainingsplan für {name}, {alter} Jahre. Fokus: {fokus}. Gib 3 kurze Übungen an."
-
-                    # Hier wird die KI aufgerufen
-                    response = model.generate_content(prompt)
-                    st.success(f"Dein Plan ist bereit, {name}!")
+                    # HIER wird das 'model' benutzt:
+                    response = model.generate_content(prompt_text)
+                    st.success("Plan fertig!")
                     st.markdown(response.text)
-                    
-                    if version == "Standard (Kostenlos)":
-                        st.markdown("---")
-                        st.write("🚀 **Willst du noch schnellere Fortschritte?** Upgrade auf PRO für Berücksichtigung von Equipment und Fitness!")
                 except Exception as e:
                     st.error(f"Fehler bei der Erstellung: {e}")
         else:
-            st.warning("Bitte gib deinen Namen ein!")
+            st.warning("Bitte Namen eingeben!")
 
 elif page == "Über KeeperIQ":
-    st.header("Über KeeperIQ 🚀")
-    st.write(f"""
-    **Willkommen in der Zukunft des Torwartspiels!**
-    
-    KeeperIQ wurde von **Tyler** entwickelt, um jedem Torwart Zugang zu modernster KI-Technologie zu verschaffen. 
-    """)
+    st.title("Über KeeperIQ 🚀")
+    st.write("Entwickelt von Tyler für die Torhüter der Zukunft.")
 
 elif page == "PRO Upgrade 💎":
-    st.header("Hol dir den PRO-Status 💎")
-    st.write("""
-    Schalte das volle Potenzial frei:
-    - ✅ Berücksichtigung von Equipment & Untergrund
-    - ✅ Fitness-gesteuerte Intensität
-    - ✅ Unbegrenzte Trainingspläne
-    """)
-    
+    st.title("PRO Upgrade 💎")
+    st.write("Schalte alle Profi-Features frei! Melde dich bei Tyler.")
+        
