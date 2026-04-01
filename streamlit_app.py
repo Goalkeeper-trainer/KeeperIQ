@@ -3,7 +3,7 @@ import google.generativeai as genai
 
 # 1. API Verbindung (Nutzt deinen hinterlegten Key)
 try:
-    api_key = st.secrets["GOOGLE_API_KEY"]
+    api_key = st.secrets["AlzaSyD08tKZBrvtmuB8VUjU4PeWfMxii2I9QTs"]
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel('gemini-pro')
 except:
