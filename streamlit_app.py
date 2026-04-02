@@ -37,7 +37,7 @@ if page == "Training":
     name = st.text_input("Wie heißt du?", placeholder="Dein Name")
     alter = st.number_input("Dein Alter", min_value=5, max_value=60, value=21)
     fokus = st.selectbox("Heutiger Schwerpunkt:", 
-                         ["Reaktion", "Flanken", "1 gegen 1", "Strafraumbeherrschung", "Abschlag", "Stellungsspiel"])
+                         ["Reaktion", "Flanken", "1 gegen 1", "Strafraumbeherrschung", "Abschlag", "Stellungsspiel", "Kommunikation"])
 
     # Logik für PRO-Features
     if version == "PRO (Premium 💎)":
@@ -48,7 +48,7 @@ if page == "Training":
             untergrund = st.selectbox("Untergrund:", ["Rasen", "Kunstrasen", "Halle", "Hartplatz"])
         prompt_text = (f"Du bist ein Weltklasse-Torwarttrainer. Erstelle einen Plan für {name} ({alter} Jahre). "
                        f"Fokus: {fokus}. Fitness-Level: {fitness}. Boden: {untergrund}. "
-                       f"Erstelle Warm-up, 3 Hauptübungen und ein Cool-down. Sei motivierend!")
+                       f"Erstelle Warm-up, 18 Hauptübungen, Übungen für Zuhause und ein Cool-down. Sei motivierend!")
     else:
         prompt_text = f"Erstelle einen einfachen Torwart-Trainingsplan für {name}, {alter} Jahre. Fokus: {fokus}."
 
