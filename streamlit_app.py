@@ -1,6 +1,26 @@
 import streamlit as st
 import google.generativeai as genai
 
+# --- DIAGNOSE-MODUS ---
+try:
+    if "GOOGLE_API_KEY" in st.secrets:
+        raw_key = st.secrets["GOOGLE_API_KEY"]
+        # Wir zeigen nur den Anfang und das Ende, damit es sicher bleibt:
+        st.write(f"DEBUG: Key gefunden! Er fängt an mit: {raw_key[:6]}... und endet mit: ...{raw_key[-4:]}")
+        
+        genai.configure(api_key=raw_key)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        # Kleiner Test-Aufruf direkt beim Start
+        test_res = model.generate_content("Hi")
+        st.sidebar.success("KI-Verbindung: OK! ✅")
+    else:
+        st.sidebar.error("KEIN KEY GEFUNDEN! ❌")
+except Exception as e:
+    st.sidebar.error(f"KI-FEHLER: {e}")
+    import streamlit as st
+import google.generativeai as genai
+
 # --- 1. API & MODELL SETUP ---
 # Hier greifen wir auf den GOOGLE_API_KEY zu, den du gerade in den Secrets gespeichert hast
 try:
